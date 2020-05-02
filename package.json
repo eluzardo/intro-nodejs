@@ -1,0 +1,14 @@
+{
+  "name": "curso-nodejs",
+  "version": "0.0.1",
+  "description": "Introduccion a node",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "author": "Emiliano Luzardo",
+  "license": "ISC",
+  "dependencies": {
+    "countries-list": "^2.5.4"
+  }
+}

@@ -1,0 +1,1 @@
+let firebase = require('../../libs/firebase');
