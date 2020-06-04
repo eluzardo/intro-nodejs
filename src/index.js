@@ -1,49 +1,38 @@
-const http = require('http');
-let url= require ('url');
-let queryString= require ('querystring');
-let {info,error} = require('./modules/my-log');
-let consts = require('./utils/const');
-let firebase = require('../libs/firebase');
-let {countries} = require ('countries-list');
+const express = require('express');
+const bodyParser = require ('body-parser');
+const dotenv = require('dotenv');
+const app = express();
+const mongoose = require('mongoose');
 
-let server = http.createServer(function (req, res) {
+dotenv.config();
 
-    let parsed = url.parse(req.url);
-    console.log("parsed:", parsed)
-    let pathname = parsed.pathname;
-    let query = queryString.parse(parsed.query);
-    console.log('Query: ', query);
-    if(pathname ==='/'){
-        res.writeHead(200,{'Content-type':'text/html'});
-        res.write('<html><body><p>HELLO</p></body></html>');
-        res.end();
-    }else if (pathname ==='/exit'){
-        res.writeHead(200,{'Content-type':'text/html'});
-        res.write('<html><body><p>BYE</p></body></html>');
-        res.end();  
-    }else if (pathname ==='/country'){
-        res.writeHead(200,{'Content-type':'application/json'});
-        res.write(JSON.stringify(countries[query.code]));
-        res.end();
-    }else if (pathname ==='/info'){
-        const result=log.info(pathname);
-        res.writeHead(200,{'Content-type':'text/html'});
-        res.write(result);
-        res.end();  
-    }else if (pathname ==='/error'){
-        const result= error(pathname);
-        res.writeHead(200,{'Content-type':'text/html'});
-        res.write(result);
-        res.end();  
-    }
-    else{
-        res.writeHead(404,{'Content-type':'text/html'});
-        res.write('<html><body><p>NOT FOUND</p></body></html>');
-        res.end();  
-    }
+const routesV1 = require('./routes/v1');
 
+console.log('MONGO', process.env.MONGO);
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
+
+routesV1(app);
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+    console.log(`RUNNING ON ${PORT}`);
+})
+mongoose.connect(process.env.MONGO, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(()=>{
+    console.log('connected to mongo');
+})
+.catch(error => {
+    console.log('mongodb error', error);
 });
 
-server.listen(3000);
-console.log('running on server 3000')
+
+
 
